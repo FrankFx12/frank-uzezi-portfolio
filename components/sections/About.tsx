@@ -55,9 +55,11 @@ export function About() {
             className="relative flex justify-center"
           >
             <div className="absolute w-[300px] h-[300px] bg-accent-violet/10 rounded-full blur-[80px]" />
-            <div className="relative w-full max-w-[400px] rounded-3xl overflow-hidden border border-accent-violet/30 shadow-glow">
+            {/* Added mt-8 lg:mt-0 to match Hero spacing on mobile */}
+            <div className="relative w-full max-w-[400px] rounded-3xl overflow-hidden border border-accent-violet/30 shadow-glow mt-8 lg:mt-0">
+              {/* UPDATED IMAGE LINK */}
               <img
-                src="https://i.postimg.cc/1zFWgL8j/5801197251831992584.jpg"
+                src="https://i.postimg.cc/Qdx4bqKB/file-00000000a0a88210b9729e2da8e1767d.png"
                 alt="Frank Uzezi"
                 className="w-full h-auto"
               />
