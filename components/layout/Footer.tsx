@@ -3,7 +3,7 @@
 import { motion } from "framer-motion";
 import { Logo } from "@/components/brand/Logo";
 import { Send, Mail } from "lucide-react";
-import { getSiteConfig } from "@/content/site.config";
+import { useSiteConfig } from "@/lib/SiteConfigProvider";
 import { trackClick } from "@/lib/utils/tracking";
 
 const quickLinks = [
@@ -16,7 +16,7 @@ const quickLinks = [
 ];
 
 export function Footer() {
-  const siteConfig = getSiteConfig();
+  const { config: siteConfig } = useSiteConfig();
   const whatsappHref = `https://wa.me/${siteConfig.contact.whatsappPrimary.replace("+", "")}?text=Hi%20Frank%2C%20I%20found%20your%20website%20and%20I%27m%20interested%20in%20working%20with%20you%20on%20a%20project.`;
 
   // Track footer social clicks

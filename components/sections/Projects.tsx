@@ -3,7 +3,7 @@
 import { motion } from "framer-motion";
 import { ArrowRight, ExternalLink } from "lucide-react";
 import { projects, type Project } from "@/lib/data/projects";
-import { getSiteConfig } from "@/content/site.config";
+import { useSiteConfig } from "@/lib/SiteConfigProvider";
 
 function formatLink(link: string) {
   if (!link) return "";
@@ -15,7 +15,7 @@ function formatLink(link: string) {
 }
 
 export function Projects() {
-  const siteConfig = getSiteConfig();
+  const { config: siteConfig } = useSiteConfig();
   const adminLinks = siteConfig.projectLinks || {};
 
   const mergedProjects: Project[] = projects.map((p) => {
@@ -54,7 +54,6 @@ export function Projects() {
             className="group relative bg-navy-800/50 border border-accent-blue/30 rounded-3xl overflow-hidden mb-20 hover:shadow-glow transition-all duration-500"
           >
             <div className="grid lg:grid-cols-2">
-              {/* Image Side - VISIBLE BY DEFAULT */}
               <div className="relative aspect-square lg:aspect-auto lg:h-full overflow-hidden bg-navy-900">
                 <img
                   src={featured.image}
@@ -68,7 +67,6 @@ export function Projects() {
                 )}
               </div>
 
-              {/* Content Side */}
               <div className="p-8 lg:p-12 flex flex-col justify-center">
                 <span className="text-accent-blue text-sm font-medium mb-2">{featured.category}</span>
                 <h3 className="text-3xl lg:text-4xl font-bold mb-4">{featured.title}</h3>
@@ -92,7 +90,7 @@ export function Projects() {
           </motion.div>
         )}
 
-        {/* Other Projects Grid - VISIBLE BY DEFAULT */}
+        {/* Other Projects Grid */}
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           {otherProjects.map((project, index) => (
             <motion.div
@@ -104,7 +102,6 @@ export function Projects() {
               whileHover={{ y: -8 }}
               className="group relative bg-navy-800/50 border border-white/10 rounded-2xl overflow-hidden hover:border-accent-violet/50 hover:shadow-glow transition-all duration-500"
             >
-              {/* Image Container - Real image shows immediately */}
               <div className="relative aspect-video overflow-hidden bg-navy-900">
                 <img
                   src={project.image}

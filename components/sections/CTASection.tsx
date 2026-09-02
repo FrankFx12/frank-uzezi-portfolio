@@ -3,10 +3,10 @@
 import { motion } from "framer-motion";
 import { ArrowRight, MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/Button";
-import { getSiteConfig } from "@/content/site.config";
+import { useSiteConfig } from "@/lib/SiteConfigProvider";
 
 export function CTASection() {
-  const siteConfig = getSiteConfig();
+  const { config: siteConfig } = useSiteConfig();
   const whatsappHref = `https://wa.me/${siteConfig.contact.whatsappPrimary.replace("+", "")}?text=Hi%20Frank%2C%20I%20found%20your%20website%20and%20I%27m%20interested%20in%20working%20with%20you%20on%20a%20project.`;
 
   return (

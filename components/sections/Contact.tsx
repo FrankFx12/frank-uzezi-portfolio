@@ -6,7 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Send, Mail, Phone, User, Building2, Briefcase, MessageSquare } from "lucide-react";
 import { Button } from "@/components/ui/Button";
-import { getSiteConfig } from "@/content/site.config";
+import { useSiteConfig } from "@/lib/SiteConfigProvider";
 
 const formSchema = z.object({
   name: z.string().min(2, "Name is required"),
@@ -19,7 +19,7 @@ const formSchema = z.object({
 type FormData = z.infer<typeof formSchema>;
 
 export function Contact() {
-  const siteConfig = getSiteConfig();
+  const { config: siteConfig } = useSiteConfig();
   const { register, handleSubmit, formState: { errors } } = useForm<FormData>({
     resolver: zodResolver(formSchema),
   });

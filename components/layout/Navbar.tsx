@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X } from "lucide-react";
 import { Logo } from "@/components/brand/Logo";
-import { getSiteConfig } from "@/content/site.config";
+import { useSiteConfig } from "@/lib/SiteConfigProvider";
 import { trackClick } from "@/lib/utils/tracking";
 
 const navLinks = [
@@ -17,7 +17,7 @@ const navLinks = [
 ];
 
 export function Navbar() {
-  const siteConfig = getSiteConfig();
+  const { config: siteConfig } = useSiteConfig();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
 
