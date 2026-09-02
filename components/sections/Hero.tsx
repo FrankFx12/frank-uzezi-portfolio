@@ -113,8 +113,10 @@ export function Hero() {
           >
             <div className="absolute w-[400px] h-[400px] bg-accent-blue/20 rounded-full blur-[100px]" />
             
-            <div className="relative w-full max-w-[400px] rounded-3xl overflow-hidden border-2 border-accent-blue/30 shadow-glow">
-              <img src="https://i.postimg.cc/1zFWgL8j/5801197251831992584.jpg" alt="Frank Uzezi" className="w-full h-auto" />
+            {/* Added mt-8 to give space on mobile, lg:mt-0 to remove on desktop */}
+            <div className="relative w-full max-w-[400px] rounded-3xl overflow-hidden border-2 border-accent-blue/30 shadow-glow mt-8 lg:mt-0">
+              {/* UPDATED IMAGE LINK */}
+              <img src="https://i.postimg.cc/Qdx4bqKB/file-00000000a0a88210b9729e2da8e1767d.png" alt="Frank Uzezi" className="w-full h-auto" />
               <div className="absolute inset-0 bg-gradient-to-t from-navy-950/30 to-transparent pointer-events-none" />
             </div>
 
