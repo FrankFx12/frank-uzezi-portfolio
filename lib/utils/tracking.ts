@@ -16,11 +16,9 @@ function getDevice(): string {
 export function trackVisit() {
   if (typeof window === 'undefined') return;
   const visit = { date: getToday(), time: getTime(), page: window.location.pathname, referrer: document.referrer || 'direct', device: getDevice() };
-
   supabase.from('visits').insert([visit]).then(({ error }: any) => {
     if (error) console.error('Supabase visit error:', error.message);
   }).catch((err: any) => console.error(err));
-
   try {
     const visits = JSON.parse(localStorage.getItem('frank_visits') || '[]');
     visits.push(visit);
@@ -31,11 +29,9 @@ export function trackVisit() {
 export function trackClick(buttonName: string) {
   if (typeof window === 'undefined') return;
   const click = { button: buttonName, date: getToday(), time: getTime() };
-
   supabase.from('clicks').insert([click]).then(({ error }: any) => {
     if (error) console.error('Supabase click error:', error.message);
   }).catch((err: any) => console.error(err));
-
   try {
     const clicks = JSON.parse(localStorage.getItem('frank_clicks') || '[]');
     clicks.push(click);

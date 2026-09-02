@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { supabase, getAnalyticsFromSupabase } from "@/lib/utils/tracking";
-import { Smartphone, Monitor, Activity, Eye } from "lucide-react";
+import { Smartphone, Monitor, Activity, Eye, Settings } from "lucide-react";
 
 export default function AdminPage() {
   const router = useRouter();
@@ -12,6 +12,13 @@ export default function AdminPage() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
 
+  // General Settings
+  const [siteName, setSiteName] = useState("FRANK UZEZI");
+  const [role, setRole] = useState("CEO • Web Developer & Digital Experience Designer");
+  const [headline, setHeadline] = useState("Building Modern Digital Experiences That Help Businesses Grow.");
+  const [availability, setAvailability] = useState("Available for New Projects");
+
+  // Contact Settings
   const [whatsapp1, setWhatsapp1] = useState("");
   const [whatsapp2, setWhatsapp2] = useState("");
   const [email, setEmail] = useState("");
@@ -22,13 +29,16 @@ export default function AdminPage() {
   const [projectLinks, setProjectLinks] = useState<{ [key: string]: string }>({});
   const [activeTab, setActiveTab] = useState("dashboard");
 
-  // State matching the Supabase data exactly (with as any to fix TypeScript)
   const [analytics, setAnalytics] = useState<any>({ visits: [], clicks: [], totalVisits: 0, totalClicks: 0 });
 
   useEffect(() => {
     const loadConfig = async () => {
       const { data, error } = await supabase.from('site_config').select('*').eq('id', 1).single();
       if (data) {
+        setSiteName(data.site_name || "FRANK UZEZI");
+        setRole(data.role || "CEO • Web Developer & Digital Experience Designer");
+        setHeadline(data.headline || "Building Modern Digital Experiences That Help Businesses Grow.");
+        setAvailability(data.availability || "Available for New Projects");
         setWhatsapp1(data.whatsapp_primary || "");
         setWhatsapp2(data.whatsapp_secondary || "");
         setEmail(data.email || "");
@@ -43,8 +53,6 @@ export default function AdminPage() {
         projData.forEach((item: any) => links[item.project_name] = item.link);
         setProjectLinks(links);
       }
-      
-      // Set analytics from Supabase
       const analyticsData = await getAnalyticsFromSupabase();
       setAnalytics(analyticsData);
     };
@@ -61,6 +69,7 @@ export default function AdminPage() {
 
   const handleSave = async () => {
     const { error: configError } = await supabase.from('site_config').update({
+      site_name: siteName, role: role, headline: headline, availability: availability,
       whatsapp_primary: whatsapp1, whatsapp_secondary: whatsapp2, email,
       instagram: instagram, tiktok: tiktok, twitter: twitter, linkedin: linkedin,
     }).eq('id', 1);
@@ -91,9 +100,9 @@ export default function AdminPage() {
     );
   }
 
-  const mobileCount = analytics.visits.filter((v: any) => v.device === 'Mobile').length;
-  const tabletCount = analytics.visits.filter((v: any) => v.device === 'Tablet').length;
-  const desktopCount = analytics.visits.filter((v: any) => v.device === 'Desktop').length;
+  const mobileCount = analytics.visits?.filter((v: any) => v.device === 'Mobile').length || 0;
+  const tabletCount = analytics.visits?.filter((v: any) => v.device === 'Tablet').length || 0;
+  const desktopCount = analytics.visits?.filter((v: any) => v.device === 'Desktop').length || 0;
   const totalDevices = Math.max(mobileCount + tabletCount + desktopCount, 1);
 
   return (
@@ -105,7 +114,7 @@ export default function AdminPage() {
         </div>
 
         <div className="flex flex-wrap gap-2 mb-8">
-          {['dashboard', 'analytics', 'contact', 'projects'].map(tab => (
+          {['dashboard', 'analytics', 'general', 'contact', 'projects'].map(tab => (
             <button key={tab} onClick={() => setActiveTab(tab)} className={`px-4 py-2 rounded-lg text-sm font-medium capitalize ${activeTab === tab ? 'bg-gradient-to-r from-accent-blue to-accent-violet text-white' : 'bg-navy-800 text-text-secondary border border-white/10'}`}>{tab}</button>
           ))}
         </div>
@@ -134,34 +143,6 @@ export default function AdminPage() {
                 <p className="text-4xl font-bold text-white">{desktopCount}</p>
               </div>
             </div>
-
-            <div className="grid lg:grid-cols-2 gap-6">
-              <div className="bg-navy-800/50 border border-white/10 rounded-2xl p-6">
-                <h3 className="text-lg font-semibold text-white mb-4">Device Breakdown</h3>
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between"><span className="text-sm text-text-secondary">📱 Mobile</span><span className="text-white font-bold">{Math.round((mobileCount / totalDevices) * 100)}%</span></div>
-                  <div className="h-2 bg-navy-900 rounded-full overflow-hidden"><div className="h-full bg-accent-blue" style={{ width: `${(mobileCount / totalDevices) * 100}%` }} /></div>
-                  <div className="flex items-center justify-between pt-2"><span className="text-sm text-text-secondary">💻 Desktop</span><span className="text-white font-bold">{Math.round((desktopCount / totalDevices) * 100)}%</span></div>
-                  <div className="h-2 bg-navy-900 rounded-full overflow-hidden"><div className="h-full bg-accent-violet" style={{ width: `${(desktopCount / totalDevices) * 100}%` }} /></div>
-                </div>
-              </div>
-
-              <div className="bg-navy-800/50 border border-white/10 rounded-2xl p-6">
-                <h3 className="text-lg font-semibold text-white mb-4">Recent Visits</h3>
-                <div className="space-y-2">
-                  {analytics.visits.slice(0, 5).map((v: any, i: number) => (
-                    <div key={i} className="flex justify-between items-center bg-navy-900/50 p-3 rounded-lg">
-                      <div className="text-xs">
-                        <p className="text-white">{v.device}</p>
-                        <p className="text-text-secondary">{v.page}</p>
-                      </div>
-                      <div className="text-xs text-text-secondary text-right"><p>{v.date}</p><p>{v.time}</p></div>
-                    </div>
-                  ))}
-                  {analytics.visits.length === 0 && <p className="text-text-secondary text-sm">No visits yet.</p>}
-                </div>
-              </div>
-            </div>
           </div>
         )}
 
@@ -174,12 +155,36 @@ export default function AdminPage() {
                   <tr><th className="py-2 pr-4">Button</th><th className="py-2 pr-4">Date</th><th className="py-2">Time</th></tr>
                 </thead>
                 <tbody>
-                  {analytics.clicks.map((c: any, i: number) => (
+                  {analytics.clicks?.map((c: any, i: number) => (
                     <tr key={i} className="border-b border-white/5"><td className="py-2 text-white">{c.button}</td><td className="py-2 text-text-secondary">{c.date}</td><td className="py-2 text-text-secondary">{c.time}</td></tr>
                   ))}
-                  {analytics.clicks.length === 0 && <tr><td colSpan={3} className="text-center py-4 text-text-secondary">No clicks yet</td></tr>}
+                  {analytics.clicks?.length === 0 && <tr><td colSpan={3} className="text-center py-4 text-text-secondary">No clicks yet</td></tr>}
                 </tbody>
               </table>
+            </div>
+          </div>
+        )}
+
+        {activeTab === "general" && (
+          <div className="bg-navy-800/50 border border-white/10 rounded-2xl p-6 space-y-4">
+            <h2 className="text-xl font-bold text-white">General Settings</h2>
+            <div className="grid grid-cols-1 gap-4">
+              <div>
+                <label className="text-sm text-text-secondary block mb-1">Site Name</label>
+                <input value={siteName} onChange={(e) => setSiteName(e.target.value)} className="w-full bg-navy-900 border border-white/10 rounded-lg p-3 text-white" />
+              </div>
+              <div>
+                <label className="text-sm text-text-secondary block mb-1">Role / Title</label>
+                <input value={role} onChange={(e) => setRole(e.target.value)} className="w-full bg-navy-900 border border-white/10 rounded-lg p-3 text-white" />
+              </div>
+              <div>
+                <label className="text-sm text-text-secondary block mb-1">Headline</label>
+                <textarea value={headline} onChange={(e) => setHeadline(e.target.value)} rows={3} className="w-full bg-navy-900 border border-white/10 rounded-lg p-3 text-white" />
+              </div>
+              <div>
+                <label className="text-sm text-text-secondary block mb-1">Availability Status</label>
+                <input value={availability} onChange={(e) => setAvailability(e.target.value)} className="w-full bg-navy-900 border border-white/10 rounded-lg p-3 text-white" />
+              </div>
             </div>
           </div>
         )}
@@ -210,7 +215,7 @@ export default function AdminPage() {
           </div>
         )}
 
-        {(activeTab === "contact" || activeTab === "projects") && (
+        {(activeTab === "general" || activeTab === "contact" || activeTab === "projects") && (
           <button onClick={handleSave} className="w-full mt-6 bg-gradient-to-r from-accent-blue to-accent-violet text-white font-bold py-3 rounded-lg text-lg hover:shadow-glow">Save All Changes</button>
         )}
       </div>

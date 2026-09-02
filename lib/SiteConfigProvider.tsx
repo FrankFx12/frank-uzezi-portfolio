@@ -4,6 +4,10 @@ import { createContext, useContext, useEffect, useState } from "react";
 import { supabase } from "@/lib/utils/tracking";
 
 const defaultConfig = {
+  siteName: "FRANK UZEZI",
+  role: "CEO • Web Developer & Digital Experience Designer",
+  headline: "Building Modern Digital Experiences That Help Businesses Grow.",
+  availability: "Available for New Projects",
   contact: {
     whatsappPrimary: "+2348161889155",
     whatsappSecondary: "+2347079443515",
@@ -15,8 +19,6 @@ const defaultConfig = {
     tiktok: "https://vm.tiktok.com/ZS9BANYVRqsX6-V952f/",
     twitter: "https://x.com/Frankuzezi",
   },
-  availability: "Available for New Projects",
-  // Add copyright here
   copyright: "© 2026 Frank Uzezi. All rights reserved.",
   projectLinks: {} as Record<string, string>,
 };
@@ -38,19 +40,14 @@ export function SiteConfigProvider({ children }: { children: React.ReactNode }) 
   useEffect(() => {
     const fetchConfig = async () => {
       try {
-        const { data: siteConfig, error: configError } = await supabase
-          .from('site_config')
-          .select('*')
-          .eq('id', 1)
-          .single();
-
-        const { data: projectLinksData, error: linksError } = await supabase
-          .from('project_links')
-          .select('*');
-
-        if (!configError && siteConfig) {
+        const { data: siteConfig, error } = await supabase.from('site_config').select('*').eq('id', 1).single();
+        if (!error && siteConfig) {
           setConfig((prev) => ({
             ...prev,
+            siteName: siteConfig.site_name || prev.siteName,
+            role: siteConfig.role || prev.role,
+            headline: siteConfig.headline || prev.headline,
+            availability: siteConfig.availability || prev.availability,
             contact: {
               whatsappPrimary: siteConfig.whatsapp_primary || prev.contact.whatsappPrimary,
               whatsappSecondary: siteConfig.whatsapp_secondary || prev.contact.whatsappSecondary,
@@ -65,12 +62,10 @@ export function SiteConfigProvider({ children }: { children: React.ReactNode }) 
             },
           }));
         }
-
-        if (!linksError && projectLinksData) {
+        const { data: projData } = await supabase.from('project_links').select('*');
+        if (projData) {
           const links: Record<string, string> = {};
-          projectLinksData.forEach((item: any) => {
-            if (item.link) links[item.project_name] = item.link;
-          });
+          projData.forEach((item: any) => { if (item.link) links[item.project_name] = item.link; });
           setConfig((prev) => ({ ...prev, projectLinks: links }));
         }
       } catch (error) {
@@ -79,7 +74,6 @@ export function SiteConfigProvider({ children }: { children: React.ReactNode }) 
         setLoading(false);
       }
     };
-
     fetchConfig();
   }, []);
 
@@ -92,8 +86,6 @@ export function SiteConfigProvider({ children }: { children: React.ReactNode }) 
 
 export function useSiteConfig() {
   const context = useContext(SiteConfigContext);
-  if (context === undefined) {
-    throw new Error("useSiteConfig must be used within a SiteConfigProvider");
-  }
+  if (context === undefined) throw new Error("useSiteConfig must be used within a SiteConfigProvider");
   return context;
 }
